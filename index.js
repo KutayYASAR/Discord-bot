@@ -21,13 +21,25 @@ client.on('message', message => {
 			return message.channel.send('Lütfen tek seferde sadece 1 adet etiketleme yapınız!');
 		}
 	}
-	else if (command === 'ping') {
-		message.channel.send('Pong.');
+	else if (command === 'temizle') {
+		const amount = parseInt(args[0]) + 1;
+		if (isNaN(amount)) {
+			return message.reply('Lütfen geçerli bir sayı giriniz!');
+		}
+		else if(amount < 2 || amount > 100) {
+			return message.reply('En az 1 en fazla 99 mesaj silebilirsiniz');
+		}
+		if (message.channel.bulkDelete(amount, true).catch(err => {
+			console.log(err);
+			message.channel.send('Temizleme işlemi bir hatadan dolayı yapılamadı!');
+		})) {
+			message.reply(`${amount - 1} adet mesaj başarıyla silindi!`).then(msg => msg.delete({ timeout: 3000 }).catch(console.error));
+		}
 	}
 	else if (command === 'server') {
 		const date = message.guild.createdAt.toLocaleString();
 		console.log(date);
-		return message.channel.send(`Merhaba ${message.author.username}!\nSunucumuz : ${message.guild.name}\n ${date}'dan beri açık! \nÜye Sayımız : ${message.guild.memberCount}\n`, { files: [message.guild.iconURL()] });
+		return message.channel.send(`Merhaba ${message.author.name}!\nSunucumuz : ${message.guild.name}\n ${date}'dan beri açık! \nÜye Sayımız : ${message.guild.memberCount}\n`, { files: [message.guild.iconURL()] });
 	}
 });
 client.login(token);
